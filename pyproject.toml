@@ -7,3 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
   "pytest",
 ]
+
+[tool.setuptools]
+script-files = [ "src/initialize.sh" ]

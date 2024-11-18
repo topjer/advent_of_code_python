@@ -1,0 +1,39 @@
+#! /bin/bash
+
+if ! [ -z "$VIRTUAL_ENV" ]; then
+  basepath=$(dirname $VIRTUAL_ENV)/src; else
+  basepath="."
+fi
+
+echo $basepath
+
+echo For which year do you want to initialize?
+
+read year
+
+echo For which day do you want to initialize?
+
+read day
+
+echo You chose year: $year, day: $day
+
+# check for existing of the year folder
+#
+if ! [ -d $basepath/$year ]; then
+  mkdir ./$year
+  echo Folder $year has been created.
+fi
+
+if [ -d $basepath/$year/$day ]; then
+  echo The there is already a folder for day: $day in year: $year. Aborting!
+  exit 1
+fi
+
+echo Copying template
+
+cp -r $basepath/template $basepath/$year/$day
+
+echo Downloading input
+
+# Session cookie must be stored in an environment variable for this to work
+curl https://adventofcode.com/$year/day/$day/input -H "Cookie: $AOC_COOKIE" >> $basepath/$year/$day/input
