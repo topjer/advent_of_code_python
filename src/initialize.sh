@@ -5,15 +5,8 @@ if ! [ -z "$VIRTUAL_ENV" ]; then
   basepath="."
 fi
 
-echo $basepath
-
-echo For which year do you want to initialize?
-
-read year
-
-echo For which day do you want to initialize?
-
-read day
+year=$1
+day=$2
 
 echo You chose year: $year, day: $day
 
