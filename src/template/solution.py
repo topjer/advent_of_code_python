@@ -24,13 +24,13 @@ if __name__ == '__main__':
     print(f"Outcome of part 2 is: {result_part2}.")
 
 def test_part1():
-    content = load_file('./tests/part1')
+    content = load_file('./tests/input')
     result = part_01(content)
     # put test result here
     assert result == 0
 
 def test_part2():
-    content = load_file('./tests/part2')
+    content = load_file('./tests/input')
     result = part_02(content)
     # put test result here
     assert result == 0
