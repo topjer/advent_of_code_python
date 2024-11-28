@@ -85,8 +85,8 @@ def part_01(task_input: list[str]) -> int:
 
 def part_02(task_input: list[str]) -> int:
     result = 0
-    max_size = 70000000
-    target_size = 30000000
+    max_size = 7e7
+    target_size = 3e7
     candidates = []
 
     file_tree = create_file_tree(task_input)
