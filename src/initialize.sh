@@ -5,6 +5,8 @@ if ! [ -z "$VIRTUAL_ENV" ]; then
   basepath="."
 fi
 
+echo Basepath was set to: $basepath.
+
 year=$1
 day=$2
 
@@ -13,7 +15,7 @@ echo You chose year: $year, day: $day
 # check for existing of the year folder
 #
 if ! [ -d $basepath/$year ]; then
-  mkdir ./$year
+  mkdir $basepath/$year
   echo Folder $year has been created.
 fi
 
