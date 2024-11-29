@@ -1,16 +1,13 @@
-def load_file(file_path: str):
-    with open(file_path) as file:
-        content = file.readlines()
+from src.utilities import load_file, timing_val
 
-    return content
-
-
+@timing_val
 def part_01(task_input: list[str]) -> int:
     result = 0
     # put logic here
     return result
 
 
+@timing_val
 def part_02(task_input: list[str]) -> int:
     result = 0
     # put logic here
