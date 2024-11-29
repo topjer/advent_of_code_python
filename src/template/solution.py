@@ -1,4 +1,4 @@
-from src.utilities import load_file, timing_val
+from utilities import load_file, timing_val
 
 @timing_val
 def part_01(task_input: list[str]) -> int:
