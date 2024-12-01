@@ -1,4 +1,5 @@
 from utilities import load_file, timing_val
+from pathlib import Path
 
 def create_lists(task_input: list[str]) -> tuple[list[int], list[int]]:
     left_list = []
@@ -35,12 +36,15 @@ def part_02(task_input: list[str]) -> int:
     result = sum(observed.get(x,0) * x for x in left_list)
     return result
 
+def main():
+    current_folder = Path(__file__).parent.resolve()
+    result_part1 = part_01(load_file(current_folder / 'input'))
+    print(f"Outcome of part 1 is: {result_part1}.")
+    result_part2 = part_02(load_file(current_folder / 'input'))
+    print(f"Outcome of part 2 is: {result_part2}.")
 
 if __name__ == '__main__':
-    result_part1 = part_01(load_file('./input'))
-    print(f"Outcome of part 1 is: {result_part1}.")
-    result_part2 = part_02(load_file('./input'))
-    print(f"Outcome of part 2 is: {result_part2}.")
+    main()
 
 def test_part1():
     content = load_file('./tests/input')
