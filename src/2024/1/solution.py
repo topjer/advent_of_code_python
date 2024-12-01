@@ -26,16 +26,19 @@ def part_01(task_input: list[str]) -> int:
     return result
 
 
+OBSERVED_QUANTITIES = dict()
+
+def count_occurences(number: int, right_list):
+    if number not in OBSERVED_QUANTITIES:
+        OBSERVED_QUANTITIES[number] = sum(1 for x in right_list if x == number)
+
+    return OBSERVED_QUANTITIES[number]
+
 @timing_val
 def part_02(task_input: list[str]) -> int:
     result = 0
     left_list, right_list = create_lists(task_input)
-    observed_quantities = dict()
-    for number in left_list:
-        if number not in observed_quantities:
-            observed_quantities[number] = len([lookup for lookup in right_list if lookup == number])
-
-        result += number * observed_quantities[number]
+    result = sum(count_occurences(x, right_list) * x for x in left_list)
     # put logic here
     return result
 
