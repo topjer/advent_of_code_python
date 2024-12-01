@@ -1,4 +1,4 @@
-
+from pathlib import Path
 import time
 
 def timing_val(func):
@@ -10,7 +10,7 @@ def timing_val(func):
         return res
     return wrapper
 
-def load_file(file_path: str):
+def load_file(file_path: Path):
     with open(file_path) as file:
         content = file.readlines()
     return content
