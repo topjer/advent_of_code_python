@@ -19,16 +19,16 @@ if ! [ -d $basepath/$year ]; then
   echo Folder $year has been created.
 fi
 
-if [ -d $basepath/$year/$day ]; then
+if [ -d $basepath/$year/day_$day ]; then
   echo The there is already a folder for day: $day in year: $year. Aborting!
   exit 1
 fi
 
 echo Copying template
 
-cp -r $basepath/template $basepath/$year/$day
+cp -r $basepath/template $basepath/$year/day_$day
 
 echo Downloading input
 
 # Session cookie must be stored in an environment variable for this to work
-curl https://adventofcode.com/$year/day/$day/input -H "Cookie: $AOC_COOKIE" >> $basepath/$year/$day/input
+curl https://adventofcode.com/$year/day/$day/input -H "Cookie: $AOC_COOKIE" >> $basepath/$year/day_$day/input
