@@ -39,7 +39,7 @@ def part_02(task_input: list[str]) -> int:
 if __name__ == '__main__':
     result_part1 = part_01(load_file('./input'))
     print(f"Outcome of part 1 is: {result_part1}.")
-    result_part2 = part_02(load_file('./tests/input'))
+    result_part2 = part_02(load_file('./input'))
     print(f"Outcome of part 2 is: {result_part2}.")
 
 def test_part1():
