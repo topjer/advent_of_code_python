@@ -1,26 +1,33 @@
 from utilities import load_file, timing_val
+import timeit
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
 def levels_are_valid(levels):
-        diffs = [ x-y for x,y in zip(levels[0:-1], levels[1:])]
-        if not all(abs(x) < 4 and abs(x) > 0 for x in diffs):
-            return False
-        if all(x < 0 for x in diffs):
-            return True
-        if all(x > 0 for x in diffs):
-            return True
+    # print(levels)
+    diff = levels[0] - levels[1]
+    if abs(diff) > 3 or diff == 0:
+        return 0
 
-        return False
+    sign = diff / abs(diff)
+    for x,y in zip(levels[1:-1], levels[2:]):
+        # diffs = [ x-y for x,y in zip()]
+        diff = x-y
+        if abs(diff) > 3 or diff == 0:
+            return 0
+
+        if sign != diff / abs(diff):
+            return 0
+
+        sign = diff / abs(diff)
+    return 1
 
 @timing_val
 def part_01(task_input: list[str]) -> int:
     result = 0
     for line in task_input:
         levels = [int(number) for number in line.split()]
-
-        if levels_are_valid(levels):
-            result += 1
+        result += levels_are_valid(levels)
     # put logic here
     return result
 
@@ -37,27 +44,11 @@ def part_02(task_input: list[str]) -> int:
             result += 1
         else:
             for i in range(0, len(numbers)):
-                temp = numbers.copy()
-                del temp[i]
-                temp_levels = [int(number) for number in temp]
+                temp_levels = levels.copy()
+                del temp_levels[i]
                 if levels_are_valid(temp_levels):
                     result += 1
                     break
-                
-        # diffs = [ x-y for x,y in zip(levels[0:-1], levels[1:])]
-        # exceeded_increases = [ind for ind, x in enumerate(diffs) if abs(x) > 3 or abs(x) < 0]
-        # print(exceeded_increases)
-        # if exceeded_increases:
-        #     pass 
-        # positive_numbers = [ ind for ind, x in enumerate(diffs) if x>0]
-        # negative_numbers = [ ind for ind, x in enumerate(diffs) if x<0]
-        # if len(positive_numbers) == 1:
-        #     faulty_indices.add(positive_numbers.pop())
-        #
-        # if len(negative_numbers) == 1:
-        #     faulty_indices.add(negative_numbers.pop())
-        #
-        #
     return result
 
 def main():
