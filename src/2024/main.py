@@ -6,7 +6,7 @@ from utilities import timing_val
 def run_stuff():
     d1.solution.main()
     d2.solution.main()
-    print("Overall runtime of year 2024.")
+    print("Overall runtime of year 2024")
 
 if __name__ == '__main__':
     run_stuff()
