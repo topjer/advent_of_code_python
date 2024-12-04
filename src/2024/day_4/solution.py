@@ -12,7 +12,7 @@ def part_01(task_input: list[str]) -> int:
     all_positions = re.finditer(r'X', input_string)
     for m in all_positions:
         start_index = m.start(0)
-        print(f"start index {start_index}")
+        # print(f"start index {start_index}")
         substrings = [
             input_string[start_index:start_index+4], # horizontal
             input_string[start_index:start_index-4:-1], # horizontal_backwards
@@ -24,9 +24,9 @@ def part_01(task_input: list[str]) -> int:
             input_string[start_index:start_index - 3*(dimension-1)-1:-dimension+1], # diagonal up right
         ]
         result += sum([sstring == 'XMAS' for sstring in substrings])
-        print(substrings)
-
-    print(''.join(task_input))
+    #     print(substrings)
+    #
+    # print(''.join(task_input))
     return result
 
 @timing_val
@@ -39,19 +39,18 @@ def part_02(task_input: list[str]) -> int:
     all_positions = re.finditer(r'A', input_string)
     for m in all_positions:
         start_index = m.start(0)
-        print(f"Start index {start_index}")
+        # print(f"Start index {start_index}")
         diagonal_one = input_string[start_index - dimension - 1:start_index + dimension + 2:dimension+1]
         diagonal_two = input_string[start_index - dimension + 1:start_index + dimension: dimension-1]
         if (diagonal_one == 'SAM' or diagonal_one == 'MAS') and (diagonal_two == 'SAM' or diagonal_two == 'MAS'):
-            print("yes")
             result += 1
-        print(diagonal_two)
-    print(''.join(task_input))
+    #     print(diagonal_two)
+    # print(''.join(task_input))
     return result
 
 def main():
-    # result_part1 = part_01(load_file(CURRENT_FOLDER / 'input'))
-    # print(f"Outcome of part 1 is: {result_part1}.")
+    result_part1 = part_01(load_file(CURRENT_FOLDER / 'input'))
+    print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = part_02(load_file(CURRENT_FOLDER / 'input'))
     print(f"Outcome of part 2 is: {result_part2}.")
 
