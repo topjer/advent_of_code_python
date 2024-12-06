@@ -14,3 +14,8 @@ def load_file(file_path: Path):
     with open(file_path) as file:
         content = file.readlines()
     return content
+
+def load_file_single(file_path: Path):
+    with open(file_path) as file:
+        content = file.read()
+    return content
