@@ -114,7 +114,8 @@ def part(task_input, base) -> int:
     return final_result
 
 @timing_val
-def solution(task_input, allow_concatenation: bool):
+def unoptimized_solution(task_input, allow_concatenation: bool):
+    # the best I could come up with
     final_result = 0
     for equation in task_input:
         expected_outcome = equation[0]
@@ -158,7 +159,7 @@ def solution(task_input, allow_concatenation: bool):
     return final_result
 
 def solver(total, numbers, concat=False):
-    # print(total, numbers)
+    # inspired by https://github.com/hortonhearsadan/aoc-2024/blob/3ba4f981e2239e8df09680ed2e96b5bc6712202a/aoc_2024/day7.py
     if total < 0:
         return False
     if total == 0 and numbers == []:
@@ -176,24 +177,19 @@ def solver(total, numbers, concat=False):
     if concat:
         s_total = str(total)
         s_last_number = str(last_number)
-        # print("inside")
-        # print(s_total, s_last_number)
-        # print(s_total[-len(s_last_number):])
         if len(s_total) > len(s_last_number) and s_total[-len(s_last_number):] == s_last_number:
-            # print(s_total[:-len(s_last_number)])
             if solver(int(s_total[:-len(s_last_number)]), numbers[:], concat):
                 return True
 
     return solver(total-last_number, numbers[:], concat)
 
-
-def experiment(task_input):
+@timing_val
+def solution(task_input, concat):
     final_result = 0
     for equation in task_input:
         expected_outcome = equation[0]
         numbers = equation[1]
-        if solver(expected_outcome, numbers, True):
-            # print(expected_outcome)
+        if solver(expected_outcome, numbers[:], concat):
             final_result += expected_outcome
 
     return final_result
@@ -213,12 +209,10 @@ def main():
     print("execution start")
     # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
     task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
-    # result_part1 = solution(task_input, False)
-    # print(f"Outcome of part 1 is: {result_part1}.")
-    # result_part2 = solution(task_input, True)
-    # print(f"Outcome of part 2 is: {result_part2}.")
-    result = experiment(task_input)
-    print(result)
+    result_part1 = solution(task_input, False)
+    print(f"Outcome of part 1 is: {result_part1}.")
+    result_part2 = solution(task_input, True)
+    print(f"Outcome of part 2 is: {result_part2}.")
 
 if __name__ == '__main__':
     main()

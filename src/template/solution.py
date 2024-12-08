@@ -2,14 +2,12 @@ from utilities import load_file, load_file_single, timing_val
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
-@timing_val
 def part_01(task_input) -> int:
     result = 0
     # put logic here
     return result
 
 
-@timing_val
 def part_02(task_input) -> int:
     result = 0
     # put logic here
@@ -18,6 +16,7 @@ def part_02(task_input) -> int:
 def parse_input(task_input):
     return task_input
 
+@timing_val
 def main():
     task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
     # task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
