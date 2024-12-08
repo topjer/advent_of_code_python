@@ -204,9 +204,7 @@ def parse_input(task_input):
         result.append((outcome, numbers))
     return result
 
-@timing_val
 def main():
-    print("execution start")
     # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
     task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
     result_part1 = solution(task_input, False)

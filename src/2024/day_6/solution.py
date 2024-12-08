@@ -56,7 +56,7 @@ def part_01(task_input: str) -> int:
             direction = (direction + 1) % 4
         if plan[next_y][next_x] == '\n':
             break
-    print_plan(plan, visited_positions)
+    # print_plan(plan, visited_positions)
     # print(visited_positions)
 
     return len(visited_positions)
