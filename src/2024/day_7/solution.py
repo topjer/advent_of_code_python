@@ -1,5 +1,3 @@
-from types import resolve_bases
-from functools import cache
 from utilities import load_file, timing_val
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
@@ -54,7 +52,9 @@ def compute_solution(numbers, operations, cache):
     print(numbers, operations)
     if (numbers, operations) in cache:
         print("cache hit")
-        return cache[(numbers, operations)]
+        cache_hit = cache[(numbers, operations)]
+        print(cache_hit)
+        return cache_hit
     if len(operations) > 1:
         result = compute_solution(numbers[:-1], operations[:-1], cache)
     else:
@@ -71,15 +71,16 @@ def compute_solution(numbers, operations, cache):
         result = int(str(result) + str(operand))
 
     cache[(numbers, operations)] = result
+    print(result)
     return result
 
 @timing_val
 def part(task_input, base) -> int:
     final_result = 0
-    for equation in task_input[:5]:
+    for equation in task_input[78:79]:
         expected_outcome = equation[0]
         numbers = tuple(equation[1])
-        # print(expected_outcome, numbers)
+        print(expected_outcome, numbers)
         number_operations = len(equation[1]) - 1
         task_cache = dict()
         for i in range(base ** number_operations):
@@ -106,7 +107,7 @@ def part(task_input, base) -> int:
             # print(expected_outcome, result)
             if result == expected_outcome:
                 final_result += expected_outcome
-                print(expected_outcome, numbers)
+                print(operations)
                 break
 
     # put logic here
@@ -117,13 +118,14 @@ def experiment(task_input, allow_concatenation: bool):
     final_result = 0
     for equation in task_input:
         expected_outcome = equation[0]
-        numbers = tuple(equation[1][::-1])
+        numbers = equation[1][::-1]
         # print(expected_outcome, numbers)
         # number_operations = len(equation[1]) - 1
         # task_cache = dict()
-        check = set()
-        check.add((numbers[-1], numbers[:-1]))
+        check =  []
+        check.append([numbers[-1], numbers[:-1]])
         while check:
+            # print("foo")
             # print(check)
             current_result, numbers = check.pop()
             next_number = numbers[-1]
@@ -133,32 +135,32 @@ def experiment(task_input, allow_concatenation: bool):
             multiplication = current_result * next_number
             concatenation = int(str(current_result) + str(next_number))
 
-            if addition == expected_outcome:
+            if (addition == expected_outcome) and len(remaining_numbers) == 0:
                 final_result += expected_outcome
-                # print("Possible")
+                # print(expected_outcome)
                 break
 
-            if multiplication == expected_outcome:
+            if (multiplication == expected_outcome) and len(remaining_numbers) == 0:
                 final_result += expected_outcome
-                # print("Possible")
+                # print(expected_outcome)
                 break
 
-            if ( concatenation == expected_outcome ) and allow_concatenation:
+            if ( concatenation == expected_outcome ) and allow_concatenation and len(remaining_numbers) == 0:
                 final_result += expected_outcome
-                # print("Possible")
+                # print(expected_outcome)
                 break
 
             if not remaining_numbers:
                 continue
 
-            if addition < expected_outcome:
-                check.add((addition, remaining_numbers))
+            if addition <= expected_outcome:
+                check.append((addition, remaining_numbers))
 
-            if multiplication < expected_outcome:
-                check.add((multiplication, remaining_numbers))
+            if multiplication <= expected_outcome:
+                check.append((multiplication, remaining_numbers))
 
-            if ( concatenation < expected_outcome ) and allow_concatenation:
-                check.add((concatenation, remaining_numbers))
+            if ( concatenation <= expected_outcome ) and allow_concatenation:
+                check.append((concatenation, remaining_numbers))
 
     return final_result
 
@@ -175,8 +177,6 @@ def main():
     print("execution start")
     # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
     task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
-    # result_part1 = part(task_input,2)
-    # result_part1 = part_01(task_input)
     result_part1 = experiment(task_input, False)
     print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = experiment(task_input, True)
