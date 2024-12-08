@@ -114,19 +114,14 @@ def part(task_input, base) -> int:
     return final_result
 
 @timing_val
-def experiment(task_input, allow_concatenation: bool):
+def solution(task_input, allow_concatenation: bool):
     final_result = 0
     for equation in task_input:
         expected_outcome = equation[0]
         numbers = equation[1][::-1]
-        # print(expected_outcome, numbers)
-        # number_operations = len(equation[1]) - 1
-        # task_cache = dict()
-        check =  []
+        check = []
         check.append([numbers[-1], numbers[:-1]])
         while check:
-            # print("foo")
-            # print(check)
             current_result, numbers = check.pop()
             next_number = numbers[-1]
             remaining_numbers = numbers[:-1]
@@ -135,34 +130,74 @@ def experiment(task_input, allow_concatenation: bool):
             multiplication = current_result * next_number
             concatenation = int(str(current_result) + str(next_number))
 
-            if (addition == expected_outcome) and len(remaining_numbers) == 0:
-                final_result += expected_outcome
-                # print(expected_outcome)
-                break
+            if len(remaining_numbers) == 0:
+                if (addition == expected_outcome):
+                    final_result += expected_outcome
+                    print(expected_outcome)
+                    break
 
-            if (multiplication == expected_outcome) and len(remaining_numbers) == 0:
-                final_result += expected_outcome
-                # print(expected_outcome)
-                break
+                if (multiplication == expected_outcome):
+                    final_result += expected_outcome
+                    print(expected_outcome)
+                    break
 
-            if ( concatenation == expected_outcome ) and allow_concatenation and len(remaining_numbers) == 0:
-                final_result += expected_outcome
-                # print(expected_outcome)
-                break
+                if ( concatenation == expected_outcome ) and allow_concatenation:
+                    final_result += expected_outcome
+                    print(expected_outcome)
+                    break
+            else:
+                if addition <= expected_outcome:
+                    check.append((addition, remaining_numbers))
 
-            if not remaining_numbers:
-                continue
+                if multiplication <= expected_outcome:
+                    check.append((multiplication, remaining_numbers))
 
-            if addition <= expected_outcome:
-                check.append((addition, remaining_numbers))
-
-            if multiplication <= expected_outcome:
-                check.append((multiplication, remaining_numbers))
-
-            if ( concatenation <= expected_outcome ) and allow_concatenation:
-                check.append((concatenation, remaining_numbers))
+                if ( concatenation <= expected_outcome ) and allow_concatenation:
+                    check.append((concatenation, remaining_numbers))
 
     return final_result
+
+def solver(total, numbers, concat=False):
+    # print(total, numbers)
+    if total < 0:
+        return False
+    if total == 0 and numbers == []:
+        return True
+    if total != 0 and numbers == []:
+        return False
+
+    last_number = numbers.pop()
+
+    d,r = divmod(total, last_number)
+    if r == 0:
+        if solver(d, numbers[:], concat):
+            return True
+
+    if concat:
+        s_total = str(total)
+        s_last_number = str(last_number)
+        # print("inside")
+        # print(s_total, s_last_number)
+        # print(s_total[-len(s_last_number):])
+        if len(s_total) > len(s_last_number) and s_total[-len(s_last_number):] == s_last_number:
+            # print(s_total[:-len(s_last_number)])
+            if solver(int(s_total[:-len(s_last_number)]), numbers[:], concat):
+                return True
+
+    return solver(total-last_number, numbers[:], concat)
+
+
+def experiment(task_input):
+    final_result = 0
+    for equation in task_input:
+        expected_outcome = equation[0]
+        numbers = equation[1]
+        if solver(expected_outcome, numbers, True):
+            # print(expected_outcome)
+            final_result += expected_outcome
+
+    return final_result
+
 
 def parse_input(task_input):
     result = []
@@ -173,14 +208,17 @@ def parse_input(task_input):
         result.append((outcome, numbers))
     return result
 
+@timing_val
 def main():
     print("execution start")
     # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
     task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
-    result_part1 = experiment(task_input, False)
-    print(f"Outcome of part 1 is: {result_part1}.")
-    result_part2 = experiment(task_input, True)
-    print(f"Outcome of part 2 is: {result_part2}.")
+    # result_part1 = solution(task_input, False)
+    # print(f"Outcome of part 1 is: {result_part1}.")
+    # result_part2 = solution(task_input, True)
+    # print(f"Outcome of part 2 is: {result_part2}.")
+    result = experiment(task_input)
+    print(result)
 
 if __name__ == '__main__':
     main()
@@ -188,12 +226,12 @@ if __name__ == '__main__':
 
 def test_part1():
     content = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
-    result = experiment(content, False)
+    result = solution(content, False)
     # put test result here
     assert result == 3749
 
 def test_part2():
     content = parse_input(load_file(CURRENT_FOLDER / 'tests/input'))
-    result = experiment(content, True)
+    result = solution(content, True)
     # put test result here
     assert result == 11387
