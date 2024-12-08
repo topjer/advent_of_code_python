@@ -13,7 +13,6 @@ def solution(task_input) -> tuple[int, int]:
     dimension = task_input.find('\n')
     antinodes = set()
     purely_harmonics = set()
-    # print(dimension)
     matches = re.finditer(r'[^\.]', cleaned_task_input)
     for match in matches:
         character = match.group(0)
@@ -59,7 +58,6 @@ def main():
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
     # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/input'))
     print("Start Execution")
-    # result_part1 = part_01(task_input)
     result_part1, result_part2 = solution(task_input)
     print(f"Outcome of part 1 is: {result_part1}.")
     print(f"Outcome of part 2 is: {result_part2}.")
