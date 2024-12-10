@@ -1,0 +1,5 @@
+*.egg-info
+.python-version
+__pycache__/
+build/
+input

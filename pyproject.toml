@@ -1,0 +1,13 @@
+[project]
+name = "advent_of_code"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "pytest",
+  "networkx",
+]
+
+[tool.setuptools]
+script-files = [ "src/initialize.sh" ]
