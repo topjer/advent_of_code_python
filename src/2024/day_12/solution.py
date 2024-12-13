@@ -1,5 +1,5 @@
-import enum
 from utilities import load_file, load_file_single, timing_val
+from collections import defaultdict, Counter
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
@@ -7,43 +7,77 @@ def get_new_points(point, available_points, garden_map):
     # print("current point" ,point)
     current_value= garden_map[point]
     valid_points = set()
-    edges = dict()
-    up = (point[0] - 1, point[1])
-    down = (point[0] + 1, point[1])
-    left = (point[0], point[1] - 1)
-    right = (point[0], point[1] + 1)
-    if up in available_points:
-        if garden_map[up] == current_value:
-            valid_points.add(up)
-        else:
-            edges[point] = (point[0], point[1] + 1)
-    else:
-            edges[point] = (point[0], point[1] + 1)
+    edges = defaultdict(list)
+    N = (point[0] - 1, point[1])
+    N_val = garden_map.get(N)
+    E = (point[0], point[1] + 1)
+    E_val = garden_map.get(E)
+    S = (point[0] + 1, point[1])
+    S_val = garden_map.get(S)
+    W = (point[0], point[1] - 1)
+    W_val = garden_map.get(W)
 
-    if down in available_points:
-        if garden_map[down] == current_value:
-            valid_points.add(down)
-        else:
-            edges[(point[0] + 1, point[1] + 1)] = (point[0] + 1, point[1])
-    else:
-        edges[(point[0] + 1, point[1] + 1)] = (point[0] + 1, point[1])
+    # print(N, E, S, W)
+    if N in available_points:
+        if N_val == current_value:
+            valid_points.add((point[0] - 1, point[1]))
 
-    if left in available_points:
-        if garden_map[left] == current_value:
-            valid_points.add(left)
-        else:
-            edges[(point[0] + 1, point[1])] = point
-    else:
-        edges[(point[0] + 1, point[1])] = point
-    if right in available_points:
-        if garden_map[right] == current_value:
-            valid_points.add(right)
-        else:
-            edges[(point[0], point[1] + 1)] = (point[0] + 1, point[1] + 1)
-    else:
-        edges[(point[0], point[1] + 1)] = (point[0] + 1, point[1] + 1)
+    if S in available_points:
+        if S_val == current_value:
+            valid_points.add((point[0] + 1, point[1]))
+
+    if W in available_points:
+        if W_val == current_value:
+            valid_points.add((point[0], point[1] - 1))
+
+    if E in available_points:
+        if E_val == current_value:
+            valid_points.add((point[0], point[1] + 1))
+
     # print(valid_points)
     return valid_points, edges
+
+def find_edges(points):
+    print(points)
+    draw_region(points)
+    edges = Counter()
+    for point in points:
+        N = (point[0] - 1, point[1])
+        NE = (point[0] - 1, point[1] + 1)
+        E = (point[0], point[1] + 1)
+        SE = (point[0] + 1, point[1] + 1)
+        S = (point[0] + 1, point[1])
+        SW = (point[0] + 1, point[1] -1 )
+        W = (point[0], point[1] - 1)
+        NW = (point[0] - 1 , point[1] - 1)
+
+        if (N not in points) and (W not in points):
+            edges.update( [ point ] )
+
+        if (N in points) and (W in points) and (NW not in points):
+            edges.update( [ point ] )
+
+        if (W not in points) and (S not in points):
+            edges.update( [ point ] )
+
+        if (W in points) and (S in points) and (SW not in points):
+            edges.update( [ point ] )
+
+        if (E not in points) and (S not in points):
+            edges.update( [ point ] )
+
+        if (E in points) and (S in points) and (SE not in points):
+            edges.update( [ point ] )
+
+        if (E not in points) and (N not in points):
+            edges.update( [ point ] )
+
+        if (E in points) and (N in points) and (NE not in points):
+            edges.update( [ point ] )
+
+    print(edges)
+    return edges
+
 
 def part_01(task_input) -> int:
     result = 0
@@ -61,7 +95,7 @@ def part_01(task_input) -> int:
             # print("current point",point)
             current_region.add(point)
             new_points, edges = get_new_points(point, available_points, task_input)
-            print(new_points)
+            # print(new_points)
             # print(new_points)
             boundary += 4 - len(new_points)
             for new_point in new_points:
@@ -94,10 +128,45 @@ def draw_region(current_region):
                 print(".", end="")
         print("")
 
-    # print("")
-    # print(min_y, max_y)
-    # print(min_x, max_x)
-
+def edge_reduction():
+    # this function contains code that takes the outline of a polygon of 
+    # squares in steps of the individual squares and identifies longer edges
+        # edges_to_iterate = list(sorted(edge_dict.keys()))
+        # # print(edges_to_iterate)
+        # while edges_to_iterate:
+        #     edge = edges_to_iterate.pop()
+        #     # if not edge in edge_dict:
+        #     #     # might happen if this point has been removed in a previous step
+        #     #     continue
+        #     print(edge_dict)
+        #     middle_points = edge_dict[edge]
+        #     # print(edge)
+        #     # print("middle point", middle_point)
+        #     for middle_point in middle_points:
+        #         print("middle",middle_point)
+        #         if middle_point in edge_dict:
+        #             target_points = edge_dict[middle_point]
+        #             print("target",target_points)
+        #             for target_point in target_points:
+        #                 if (edge[0] - middle_point[0] == target_point[0] - middle_point[0]) or (edge[1] - middle_point[1] == target_point[1] - middle_point[1]):
+        #                     edge_dict[edge] = target_point
+        #                     del edge_dict[middle_point]
+        #                     try:
+        #                         edges_to_iterate.remove(middle_point)
+        #                     except Exception:
+        #                         pass
+        #                     edges_to_iterate.append(edge)
+        #
+        #     # print(edge_dict)
+        #     # print("iterate list", edges_to_iterate)
+        #     # break
+        # print("number edges", len(edge_dict))
+        # draw_region(current_region)
+        # print(current_region.pop())
+        # print("End\n")
+        # print(edge_dict)
+        # print(len(edge_dict), len(current_region))
+    pass
 
 def part_02(task_input) -> int:
     result = 0
@@ -115,8 +184,8 @@ def part_02(task_input) -> int:
             point = points_to_check.pop()
             # print("current point",point)
             current_region.add(point)
-            new_points, edges = get_new_points(point, available_points, task_input)
-            edge_dict.update(edges)
+            new_points, _ = get_new_points(point, available_points, task_input)
+            # edge_dict.update(edges)
             # print(new_points)
             # boundary += 4 - len(new_points)
             for new_point in new_points:
@@ -126,45 +195,11 @@ def part_02(task_input) -> int:
                     points_to_check.add(new_point)
                     # available_points.remove(point)
             # break
+        edges = find_edges(current_region)
         # print(current_region)
-        # result += boundary * len(current_region)
         available_points= available_points.difference(current_region)
-        # break
-
-        print(edge_dict)
-        edges_to_iterate = list(sorted(edge_dict.keys()))
-        # print(edges_to_iterate)
-        while edges_to_iterate:
-            edge = edges_to_iterate.pop()
-            # if not edge in edge_dict:
-            #     # might happen if this point has been removed in a previous step
-            #     continue
-            middle_point = edge_dict[edge]
-            # print(edge)
-            # print("middle point", middle_point)
-            if middle_point in edge_dict:
-                target_point = edge_dict[middle_point]
-                if (edge[0] - middle_point[0] == target_point[0] - middle_point[0]) or (edge[1] - middle_point[1] == target_point[1] - middle_point[1]):
-                    edge_dict[edge] = target_point
-                    del edge_dict[middle_point]
-                    try:
-                        edges_to_iterate.remove(middle_point)
-                    except Exception:
-                        pass
-                    edges_to_iterate.append(edge)
-
-            # print(edge_dict)
-            # print("iterate list", edges_to_iterate)
-            # break
-        print("number edges", len(edge_dict))
-        draw_region(current_region)
-        print(current_region.pop())
-        print("End\n")
         # print(edge_dict)
-        # print(len(edge_dict), len(current_region))
-        result += len(edge_dict) * len(current_region)
-        break
-    # put logic here
+        result += sum(val for _, val in edges.items()) * len(current_region)
     return result
 
 def parse_input(task_input: str) -> dict[tuple[ int, int ], str]:
@@ -178,12 +213,11 @@ def parse_input(task_input: str) -> dict[tuple[ int, int ], str]:
 
 @timing_val
 def main():
-    # part 2: 874361 too low
     print("STart")
-    task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
-    # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
-    # result_part1 = part_01(task_input)
-    # print(f"Outcome of part 1 is: {result_part1}.")
+    # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
+    task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
+    result_part1 = part_01(task_input)
+    print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
 
