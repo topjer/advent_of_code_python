@@ -6,6 +6,11 @@ import day_5 as d5
 import day_6 as d6
 import day_7 as d7
 import day_8 as d8
+import day_9 as d9
+import day_10 as d10
+import day_11 as d11
+import day_12 as d12
+import day_13 as d13
 
 from utilities import timing_val
 
@@ -27,6 +32,16 @@ def run_stuff():
     d7.solution.main()
     print("Day 8")
     d8.solution.main()
+    print("Day 9")
+    d9.solution.main()
+    print("Day 10")
+    d10.solution.main()
+    print("Day 11")
+    d11.solution.main()
+    print("Day 12")
+    d12.solution.main()
+    print("Day 13")
+    d13.solution.main()
     print("Overall runtime of year 2024")
 
 if __name__ == '__main__':
