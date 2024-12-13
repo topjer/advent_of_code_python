@@ -1,4 +1,6 @@
 from utilities import load_file_single, timing_val
+from collections import defaultdict
+import re
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
@@ -22,6 +24,81 @@ DIRECTIONS = {
     2: (0,1),
     3: (-1,0),
 }
+
+def generate_points_in_between(start, end, direction):
+    if direction % 2 == 0:
+        points = [(i, start[1]) for i in range(min(start[0], end[0]), max(start[0], end[0]) + 1)]
+    else:
+        points = [(start[0], i) for i in range(min(start[1], end[1]), max(start[1], end[1]) + 1)]
+
+    return points
+
+# new DIRECTIONS
+# 0 up, 1 right, 2 down, 3 left
+
+@timing_val
+def experiment(task_input):
+    start, row_obstacles, column_obstacles, dimension = task_input
+    # print(start)
+    keep_looping = True
+    direction = 0
+    current_point = start
+    visited_points = set()
+    visited_points.add(start)
+    # print(visited_points)
+    while keep_looping:
+        if direction % 2 == 0:
+            obstacles = column_obstacles[current_point[1]]
+        else:
+            obstacles = row_obstacles[current_point[0]]
+
+        if direction in (0,3):
+            aggregation_function = max
+        else:
+            aggregation_function = min
+
+        if direction == 0:
+            comparison_function = lambda x: x < current_point[0]
+        elif direction == 1:
+            comparison_function = lambda x: x > current_point[1]
+        elif direction == 2:
+            comparison_function = lambda x: x > current_point[0]
+        else:
+            comparison_function = lambda x: x < current_point[1]
+
+        obstacles = list(obs for obs in obstacles if comparison_function(obs))
+        if not obstacles:
+            if direction == 0:
+                target_point = (0, current_point[1])
+            elif direction == 1:
+                target_point = (current_point[0], dimension - 2)
+            elif direction == 2:
+                target_point = (dimension - 2, current_point[1])
+            else:
+                target_point = (current_point[0], 0)
+            # print(current_point, target_point)
+            # print("Would leave map")
+            keep_looping = False
+        else:
+            obstacle = aggregation_function(obstacles)
+
+            if direction == 0:
+                target_point = (obstacle + 1, current_point[1])
+            elif direction == 1:
+                target_point = (current_point[0], obstacle - 1)
+            elif direction == 2:
+                target_point = (obstacle - 1, current_point[1])
+            else:
+                target_point = (current_point[0], obstacle + 1)
+
+        visited_points.update(list(generate_points_in_between(current_point, target_point, direction)))
+        current_point = target_point
+        # print(target_point)
+
+        direction = (direction + 1) % 4
+
+    print(len(visited_points))
+    return len(visited_points)
 
 @timing_val
 def part_01(task_input: str) -> int:
@@ -133,15 +210,31 @@ def part_02(task_input: str) -> int:
     # print(visited_positions)
     return result
 
+def parse_input(task_input: str):
+    column_obstacles = defaultdict(list)
+    row_obstacles = defaultdict(list)
+    # print(task_input)
+    dimension = task_input.find('\n') + 1
+    start = divmod(task_input.find('^'), dimension)
+    # print(start)
+    for y,x in (divmod(match.start(), dimension) for match in re.finditer(r'#', task_input)):
+        row_obstacles[y].append(x)
+        column_obstacles[x].append(y)
+    return start, row_obstacles, column_obstacles, dimension
+
+
 def main():
     # task_input = load_file_single(CURRENT_FOLDER / 'tests/input')
     task_input = load_file_single(CURRENT_FOLDER / 'input')
+    foo = parse_input(task_input)
+    result_part1 = experiment(foo)
+    print(f"Outcome of part 1 is: {result_part1}.")
     # 5153
     result_part1 = part_01(task_input)
     print(f"Outcome of part 1 is: {result_part1}.")
     # 1711
-    result_part2 = part_02(task_input)
-    print(f"Outcome of part 2 is: {result_part2}.")
+    # result_part2 = part_02(task_input)
+    # print(f"Outcome of part 2 is: {result_part2}.")
 
 if __name__ == '__main__':
     main()
