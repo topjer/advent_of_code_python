@@ -1,5 +1,5 @@
 from utilities import load_file, load_file_single, timing_val
-from collections import defaultdict, Counter
+from collections import Counter
 from pathlib import Path
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
@@ -7,7 +7,6 @@ def get_new_points(point, available_points, garden_map):
     # print("current point" ,point)
     current_value= garden_map[point]
     valid_points = set()
-    edges = defaultdict(list)
     N = (point[0] - 1, point[1])
     N_val = garden_map.get(N)
     E = (point[0], point[1] + 1)
@@ -35,11 +34,11 @@ def get_new_points(point, available_points, garden_map):
             valid_points.add((point[0], point[1] + 1))
 
     # print(valid_points)
-    return valid_points, edges
+    return valid_points
 
 def find_edges(points):
-    print(points)
-    draw_region(points)
+    # print(points)
+    # draw_region(points)
     edges = Counter()
     for point in points:
         N = (point[0] - 1, point[1])
@@ -75,12 +74,13 @@ def find_edges(points):
         if (E in points) and (N in points) and (NE not in points):
             edges.update( [ point ] )
 
-    print(edges)
+    # print(edges)
     return edges
 
 
-def part_01(task_input) -> int:
-    result = 0
+def part_01(task_input) -> tuple[int, int]:
+    result1 = 0
+    result2 = 0
     available_points = set(task_input.keys())
     regions = set()
     for point, _ in task_input.items():
@@ -94,7 +94,7 @@ def part_01(task_input) -> int:
             point = points_to_check.pop()
             # print("current point",point)
             current_region.add(point)
-            new_points, edges = get_new_points(point, available_points, task_input)
+            new_points = get_new_points(point, available_points, task_input)
             # print(new_points)
             # print(new_points)
             boundary += 4 - len(new_points)
@@ -106,12 +106,14 @@ def part_01(task_input) -> int:
                     # available_points.remove(point)
             # break
         # print(current_region)
-        result += boundary * len(current_region)
+        edges = find_edges(current_region)
         available_points= available_points.difference(current_region)
+        result1 += boundary * len(current_region)
+        result2 += sum(val for _, val in edges.items()) * len(current_region)
         # break
 
     # put logic here
-    return result
+    return result1, result2
 
 
 def draw_region(current_region):
@@ -168,40 +170,6 @@ def edge_reduction():
         # print(len(edge_dict), len(current_region))
     pass
 
-def part_02(task_input) -> int:
-    result = 0
-    available_points = set(task_input.keys())
-    regions = set()
-    for point, _ in task_input.items():
-        if point not in available_points:
-            continue
-        points_to_check = set([point])
-        current_region = set()
-        edge_dict = dict()
-        # boundary = 0
-        # print(points_to_check)
-        while points_to_check:
-            point = points_to_check.pop()
-            # print("current point",point)
-            current_region.add(point)
-            new_points, _ = get_new_points(point, available_points, task_input)
-            # edge_dict.update(edges)
-            # print(new_points)
-            # boundary += 4 - len(new_points)
-            for new_point in new_points:
-                if new_point in current_region:
-                    continue
-                else:
-                    points_to_check.add(new_point)
-                    # available_points.remove(point)
-            # break
-        edges = find_edges(current_region)
-        # print(current_region)
-        available_points= available_points.difference(current_region)
-        # print(edge_dict)
-        result += sum(val for _, val in edges.items()) * len(current_region)
-    return result
-
 def parse_input(task_input: str) -> dict[tuple[ int, int ], str]:
     # print(task_input)
     garden_map = dict()
@@ -213,12 +181,11 @@ def parse_input(task_input: str) -> dict[tuple[ int, int ], str]:
 
 @timing_val
 def main():
-    print("STart")
     # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
-    result_part1 = part_01(task_input)
+    result_part1, result_part2 = part_01(task_input)
     print(f"Outcome of part 1 is: {result_part1}.")
-    result_part2 = part_02(task_input)
+    # result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
 
 if __name__ == '__main__':
@@ -226,12 +193,8 @@ if __name__ == '__main__':
 
 def test_part1():
     content = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
-    result = part_01(content)
+    result1, result2 = part_01(content)
     # put test result here
-    assert result == 1930
+    assert result1 == 1930
+    assert result2 == 1206
 
-def test_part2():
-    content = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
-    result = part_02(content)
-    # put test result here
-    assert result == 1206
