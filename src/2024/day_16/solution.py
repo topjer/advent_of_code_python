@@ -1,4 +1,4 @@
-from utilities import load_file, load_file_single, timing_val
+from utilities import load_file, load_file_single, timing_val, grid_parser
 import heapq as h
 from pathlib import Path
 import re
@@ -90,14 +90,11 @@ def part_02(task_input) -> int:
     # put logic here
     return result
 
+
 def parse_input(task_input):
-    dimension = task_input.find('\n')
-    cleaned_input = task_input.replace('\n', '')
-    start = divmod(cleaned_input.find('S'), dimension)
-    goal = divmod(cleaned_input.find('E'), dimension)
-    walls = set(divmod(match.start(), dimension) for match in re.finditer(r'#', cleaned_input))
+    foo = grid_parser(task_input, {'start': 'S', 'end': 'E', 'walls': '#'})
     # print(walls)
-    return start, goal, dimension, walls
+    return foo['start'], foo['end'], foo['dimension'], foo['walls']
 
 @timing_val
 def main():
