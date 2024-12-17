@@ -1,0 +1,8 @@
+2,4
+1,3 xor of reg b and 4
+7,5 reg c divided by 2 ** reg c
+0,3 reg a divided by 8
+1,4 xor of reg b and 4 -> 
+4,7 xor of reg b and reg c
+5,5 output reg b mod 8
+3,0 jump to zero
