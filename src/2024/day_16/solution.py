@@ -32,55 +32,57 @@ def is_valid(point, diff, walls):
     else:
         return new_point
 
-def part_01(task_input) -> int:
+def part_01(task_input) -> tuple[int, int]:
     result = 0
     start, goal, dimension, walls = task_input
     # print_map(start, (dimension, dimension), walls, set())
+    max_cost = 1000000
     direction = 0
     paths = []
     h.heappush(paths, (0, 0, [start]))
-    seen_points = set()
-    while paths:
+    viable_paths = set()
+    seen_points = dict()
+    while paths[0][0] <= max_cost:
         cost, direction, path = h.heappop(paths)
-        # print("current_cost", cost)
-        # print_map(path[-1], (dimension, dimension), walls, path)
+        # potential optimization: not necessary to allow all paths, only required to know the additional
+        # points that added to this path
         if (direction, path[-1]) in seen_points:
-            continue
+            if seen_points[(direction, path[-1])] < cost:
+                continue
         else:
-            seen_points.add((direction, path[-1]))
-        # print(cost, direction, path)
-        # print(paths)
+            seen_points[(direction, path[-1])] = cost
         # check straight
         if (point_straigth:=is_valid(path[-1], DIRECTIONS[direction], walls)) is not None:
-            if point_straigth == goal:
-                result = cost + 1 
-                break
             temp = path[:]
             temp.append(point_straigth)
+            if point_straigth == goal:
+                result = cost + 1 
+                max_cost = result
+                viable_paths = viable_paths.union(set(temp))
+                continue
             h.heappush(paths, (cost + 1, direction, temp))
 
         if (point_left:=is_valid(path[-1], DIRECTIONS[(direction - 1) % 4], walls)) is not None:
-            if point_left == goal:
-                result = cost + 1001
-                break
             temp = path[:]
             temp.append(point_left)
-            # print(point_left)
+            if point_left == goal:
+                result = cost + 1001
+                max_cost = result
+                viable_paths = viable_paths.union(set(temp))
+                continue
             h.heappush(paths, (cost + 1001, (direction - 1) % 4, temp))
 
         if (point_right:=is_valid(path[-1], DIRECTIONS[(direction + 1) % 4], walls)) is not None:
-            if point_right == goal:
-                result = cost + 1001
-                break
             temp = path[:]
             temp.append(point_right)
-            # print(point_right)
+            if point_right == goal:
+                result = cost + 1001
+                max_cost = result
+                viable_paths = viable_paths.union(set(temp))
+                continue
             h.heappush(paths, (cost + 1001, (direction + 1) % 4, temp))
 
-
-        # print(paths)
-    # put logic here
-    return result
+    return result, len(viable_paths)
 
 
 def part_02(task_input) -> int:
@@ -101,9 +103,8 @@ def parse_input(task_input):
 def main():
     # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
-    result_part1 = part_01(task_input)
+    result_part1, result_part2 = part_01(task_input)
     print(f"Outcome of part 1 is: {result_part1}.")
-    result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
 
 if __name__ == '__main__':
