@@ -1,4 +1,5 @@
 from utilities import load_file, load_file_single, timing_val
+from typing import Optional
 from pathlib import Path
 from collections import deque
 CURRENT_FOLDER = Path(__file__).parent.resolve()
@@ -12,14 +13,27 @@ def find_shortest_path(
     goal: tuple[int,int],
     dimension: tuple[int, int],
     walls: set[tuple[int,int]]
-):
+) -> Optional[list[tuple[int,int]]]:
+    """ Find the shortest path through a 2D grid bounded by `walls`
+
+    :inputs:
+    start
+        point from where to start the path
+    goal
+        point to be reached
+    dimension
+        number of fields in both dimensions, needed to decide whether a point is valid or not
+    walls
+        set of obstacles one cannot move through
+
+    :return:
+    list of points the path consists off
+    """
     paths_to_check = deque()
     paths_to_check.append([start])
     seen_points = set()
     solution = None
     while paths_to_check:
-        # print('hey')
-        # print(paths_to_check)
         current_path = paths_to_check.popleft()
         current_point = current_path[-1]
         # this is the most important path because it leads to super fast convergence
@@ -29,40 +43,41 @@ def find_shortest_path(
             seen_points.add(current_point)
         # check up
         if (up:=(current_point[0], current_point[1]-1)) not in walls and is_valid(up, dimension):
-            if up == goal:
-                solution = current_path
-                break
             if up not in current_path:
                 temp = current_path[:]
                 temp.append(up)
                 paths_to_check.append(temp)
+                if up == goal:
+                    solution = temp
+                    break
 
         if (down:=(current_point[0], current_point[1]+1)) not in walls and is_valid(down, dimension):
-            if down == goal:
-                solution = current_path
-                break
             if down not in current_path:
                 temp = current_path[:]
                 temp.append(down)
                 paths_to_check.append(temp)
+                if down == goal:
+                    solution = temp
+                    break
 
         if (left:=(current_point[0]-1, current_point[1])) not in walls and is_valid(left, dimension):
-            if left == goal:
-                solution = current_path
-                break
             if left not in current_path:
                 temp = current_path[:]
                 temp.append(left)
                 paths_to_check.append(temp)
+                if left == goal:
+                    solution = temp
+                    break
 
         if (right:=(current_point[0]+1, current_point[1])) not in walls and is_valid(right, dimension):
-            if right == goal:
-                solution = current_path
-                break
             if right not in current_path:
                 temp = current_path[:]
                 temp.append(right)
                 paths_to_check.append(temp)
+                if right == goal:
+                    solution = temp
+                    break
+
     return solution
 
 
@@ -72,11 +87,11 @@ def part_01(task_input, dimension, number_bytes) -> int:
     position = (0,0)
     walls = set(task_input[:number_bytes])
 
-    solution = find_shortest_path(position, dimension, walls)
+    solution = find_shortest_path(position, dimension, dimension, walls)
     # print(current_path)
     # put logic here
     if solution is not None:
-        result = len(solution)
+        result = len(solution) - 1
     return result
 
 
@@ -86,7 +101,7 @@ def part_02(task_input, dimension, number_bytes) -> tuple[int, int]:
     walls = set(task_input[:overall_index])
     last_point=(0,0)
     while True:
-        path = find_shortest_path((0,0), dimension, walls)
+        path = find_shortest_path((0,0), dimension, dimension, walls)
         if path is None:
             break
 
