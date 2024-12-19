@@ -43,45 +43,7 @@ def is_reproducible(design, patterns):
     return result
 
 
-def is_reproducible_old(design, patterns, max_length = 3):
-    print("Design is:",design)
-    if design in DESIGN_CACHE:
-        return DESIGN_CACHE[design]
-
-    if design in patterns:
-        DESIGN_CACHE[design] = True
-        return True
-
-    # if len(design) == 1:
-    #     return False
-
-    # for i in range(min(len(design), max_length), 0, -1):
-    for i in range(1, min(len(design), max_length)):
-        # print(i)
-        part = design[:i]
-        # print(patterns)
-        if part in patterns:
-            DESIGN_CACHE[part] = True
-            # print(part)
-            remainder = design[i:]
-
-            if remainder in DESIGN_CACHE:
-                return DESIGN_CACHE[remainder]
-
-            if is_reproducible(remainder, patterns, max_length):
-                DESIGN_CACHE[remainder] = True
-                return True
-            else:
-                DESIGN_CACHE[remainder] = False
-        else:
-            DESIGN_CACHE[part] = False
-    DESIGN_CACHE[design] = False
-    return False
-
-
-
 def part_01(task_input) -> int:
-    # 192, 195, 256 too low
     patterns, designs, max_length = task_input
     # essential_patterns = find_essential_patterns(patterns)
     # print(patterns)
@@ -105,7 +67,24 @@ def part_01(task_input) -> int:
 
 
 def part_02(task_input) -> int:
+    patterns, designs, max_length = task_input
+    # essential_patterns = find_essential_patterns(patterns)
+    # print(patterns)
+    # print(designs)
+    # print(max_length)
     result = 0
+    # designs = ['brbwrrruwrrrubrwuugrbuuwuuwrwrbrrgububwurugbwwrb']
+    # designs = ['brgr']
+    for design in list(designs):
+        # print(design)
+        if is_reproducible(design, patterns):
+        # if is_reproducible(design, patterns, max_length):
+            result += 1
+            # print('yes')
+        else:
+            print(design)
+        # break
+
     # put logic here
     return result
 
@@ -121,8 +100,8 @@ def main():
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
     print("start")
     # task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
-    result_part1 = part_01(task_input)
-    print(f"Outcome of part 1 is: {result_part1}.")
+    # result_part1 = part_01(task_input)
+    # print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
 
