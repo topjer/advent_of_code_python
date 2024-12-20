@@ -29,11 +29,17 @@ def number_shortcuts(point, index, path, diffs, min_dist):
                   and index - path[new_point] - reach >= min_dist)
     return new_points
 
-def find_next_point(point, walls, seen):
-    for diff in DIFFS:
-        new_point = (point[0]+diff[0], point[1]+diff[1])
-        if (new_point not in walls) and (new_point not in seen):
-            return new_point
+def find_next_point(point, potential_direction, walls, seen):
+    follow_direction = (point[0]+potential_direction[0], point[1]+potential_direction[1])
+    if (follow_direction not in walls) and (follow_direction not in seen):
+        return follow_direction, potential_direction
+    else:
+        for diff in DIFFS:
+            if diff == potential_direction:
+                continue
+            new_point = (point[0]+diff[0], point[1]+diff[1])
+            if (new_point not in walls) and (new_point not in seen):
+                return new_point, diff
 
 def part_02(task_input, upper_bound: int) -> tuple[int, int]:
     """ Go through the race track and for each new point check whether you could have reached a previous point through
@@ -49,8 +55,9 @@ def part_02(task_input, upper_bound: int) -> tuple[int, int]:
     diffs_short = generate_diffs(2)
     seen_points = {start: 0}
     current_point = start
+    current_direction = DIFFS[0]
     while True:
-        next_point = find_next_point(current_point, walls, seen_points)
+        next_point, current_direction = find_next_point(current_point, current_direction, walls, seen_points)
         steps += 1
         result1 += number_shortcuts(next_point, steps, seen_points, diffs_short, upper_bound)
         result2 += number_shortcuts(next_point, steps, seen_points, diffs_long, upper_bound)
@@ -63,7 +70,6 @@ def part_02(task_input, upper_bound: int) -> tuple[int, int]:
 
 
 def parse_input(task_input):
-    # print(task_input)
     task_input = grid_parser(task_input, {'walls': '#', 'start': 'S', 'end': 'E'})
     return task_input
 
