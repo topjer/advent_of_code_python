@@ -1,6 +1,5 @@
-from utilities import load_file, load_file_single, timing_val, grid_parser, print_map, find_shortest_path
+from utilities import load_file, load_file_single, timing_val, grid_parser
 from pathlib import Path
-from collections import Counter
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
 DIFFS = [
@@ -11,14 +10,24 @@ DIFFS = [
 ]
 
 def generate_diffs(max_value: int):
-    points = [(x,y)  for x in range(-max_value, max_value+1) for y in range((-1) * (max_value-abs(x)), max_value-abs(x)+1) if abs(x)+abs(y) > 1]
+    """ Generate all diff vectors of manhatten length less `max_value`
+
+    Result is a list of points and their manhatten length
+    """
+    points = [((x,y), reach)  for x in range(-max_value, max_value+1) for y in range((-1) * (max_value-abs(x)), max_value-abs(x)+1) if (reach:=abs(x)+abs(y)) > 1]
     return points
 
-def find_shortcut(point, index, path, diffs, min_dist):
-    new_points = [(new_point, abs(diff[0])+abs(diff[1])) for diff in diffs if (new_point:=(point[0] + diff[0], point[1] + diff[1])) in path]
-    # keep all points already visited that could be reached through a shortcut faster
-    shortcuts = [(index - path[point] - reach) for point, reach in new_points if (index - path[point] -reach >= min_dist)]
-    return shortcuts
+def number_shortcuts(point, index, path, diffs, min_dist):
+    """ Get the numbers of shortcuts that could get you to `point` quicker then trough the path.
+    
+    Only count shortcuts that give you a minimum improvement of `min_dist`.
+    Note: We check here which shortcuts would lead to the point in question and not from the point.
+
+    This function went through quiet a lot of runtime optimization which did not help readability
+    """
+    new_points = sum(1 for diff, reach in diffs if (new_point:=(point[0] + diff[0], point[1] + diff[1])) in path
+                  and index - path[new_point] - reach >= min_dist)
+    return new_points
 
 def find_next_point(point, walls, seen):
     for diff in DIFFS:
@@ -33,8 +42,8 @@ def part_02(task_input, upper_bound: int) -> tuple[int, int]:
     Does this for part 1 and 2 simultaneously
     """
     start, walls, goal, _ = task_input['start'], task_input['walls'], task_input['end'], task_input['dimension']
-    result2 = Counter()
-    result1 = Counter()
+    result2 = 0
+    result1 = 0
     steps = 0
     diffs_long = generate_diffs(20)
     diffs_short = generate_diffs(2)
@@ -43,16 +52,14 @@ def part_02(task_input, upper_bound: int) -> tuple[int, int]:
     while True:
         next_point = find_next_point(current_point, walls, seen_points)
         steps += 1
-        shortcuts1 = find_shortcut(next_point, steps, seen_points, diffs_short, upper_bound)
-        result1.update(shortcuts1)
-        shortcuts2 = find_shortcut(next_point, steps, seen_points, diffs_long, upper_bound)
-        result2.update(shortcuts2)
+        result1 += number_shortcuts(next_point, steps, seen_points, diffs_short, upper_bound)
+        result2 += number_shortcuts(next_point, steps, seen_points, diffs_long, upper_bound)
         seen_points[next_point] = steps
         current_point = next_point
         if next_point == goal:
             break
 
-    return sum(val for key, val in result1.items() if key >= upper_bound), sum(val for key, val in result2.items() if key >= upper_bound)
+    return result1, result2
 
 
 def parse_input(task_input):
