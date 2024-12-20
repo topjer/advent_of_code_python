@@ -14,10 +14,10 @@ def generate_diffs(max_value: int):
     points = [(x,y)  for x in range(-max_value, max_value+1) for y in range((-1) * (max_value-abs(x)), max_value-abs(x)+1) if abs(x)+abs(y) > 1]
     return points
 
-def find_shortcut(point, index, path, diffs):
-    new_points = [((point[0] + diff[0], point[1] + diff[1]), abs(diff[0])+abs(diff[1])) for diff in diffs]
+def find_shortcut(point, index, path, diffs, min_dist):
+    new_points = [(new_point, abs(diff[0])+abs(diff[1])) for diff in diffs if (new_point:=(point[0] + diff[0], point[1] + diff[1])) in path]
     # keep all points already visited that could be reached through a shortcut faster
-    shortcuts = [(index - path[point] - reach) for point, reach in new_points if (point in path) and (index - path[point] > reach)]
+    shortcuts = [(index - path[point] - reach) for point, reach in new_points if (index - path[point] -reach >= min_dist)]
     return shortcuts
 
 def find_next_point(point, walls, seen):
@@ -43,9 +43,9 @@ def part_02(task_input, upper_bound: int) -> tuple[int, int]:
     while True:
         next_point = find_next_point(current_point, walls, seen_points)
         steps += 1
-        shortcuts1 = find_shortcut(next_point, steps, seen_points, diffs_short)
+        shortcuts1 = find_shortcut(next_point, steps, seen_points, diffs_short, upper_bound)
         result1.update(shortcuts1)
-        shortcuts2 = find_shortcut(next_point, steps, seen_points, diffs_long)
+        shortcuts2 = find_shortcut(next_point, steps, seen_points, diffs_long, upper_bound)
         result2.update(shortcuts2)
         seen_points[next_point] = steps
         current_point = next_point
