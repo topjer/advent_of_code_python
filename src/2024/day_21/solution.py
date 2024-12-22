@@ -55,16 +55,16 @@ def determine_command(command: str, start: tuple[int, int], coords):
 def part_01(task_input) -> int:
     result = 0
     print(task_input)
-    for command in task_input[4:]:
-        initial_sequence = determine_command(command, (3,2), COORDS_NUMERIC)
-        second_sequence = determine_command(initial_sequence, (0,2), COORDS_DIRECTIONAL)
-        final_sequence = determine_command(second_sequence, (0,2), COORDS_DIRECTIONAL)
-        print(initial_sequence)
-        print(second_sequence)
-        print(final_sequence)
-        print(len(final_sequence))
-        print(int(command[0:3]))
-        result += len(final_sequence) * int(command[0:3])
+    # for command in task_input[4:]:
+    #     initial_sequence = determine_command(command, (3,2), COORDS_NUMERIC)
+    #     second_sequence = determine_command(initial_sequence, (0,2), COORDS_DIRECTIONAL)
+    #     final_sequence = determine_command(second_sequence, (0,2), COORDS_DIRECTIONAL)
+    #     print(initial_sequence)
+    #     print(second_sequence)
+    #     print(final_sequence)
+    #     print(len(final_sequence))
+    #     print(int(command[0:3]))
+    #     result += len(final_sequence) * int(command[0:3])
     # put logic here
     return result
 
