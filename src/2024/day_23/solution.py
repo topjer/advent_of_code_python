@@ -67,7 +67,7 @@ def test_part1():
     content = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
     result = part_01(content)
     # put test result here
-    assert result == 7
+    assert result == 1248
 
 def test_part2():
     content = parse_input(load_file_single(CURRENT_FOLDER / 'tests/test_input'))
