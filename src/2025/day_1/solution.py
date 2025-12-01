@@ -18,16 +18,16 @@ def part_02(task_input) -> int:
     result = 0
     for number in task_input:
         result += abs(number) // 100
-        print(current_position, number, result)
-        increment = number % 100
+        increment = int(number / abs(number) * (abs(number) % 100))
+        print(current_position, number, result, increment)
         if current_position != 0:
-            if number > 0 and number + current_position >= 100:
+            if increment > 0 and increment + current_position >= 100:
                 result += 1
                 # print("foo")
-            if number < 0 and current_position + number <= 0:
+            if increment < 0 and current_position + increment <= 0:
                 result += 1
                 # print("bar")
-        current_position = (current_position + number) % 100
+        current_position = (current_position + increment) % 100
     # put logic here
     return result
 
