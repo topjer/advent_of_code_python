@@ -19,7 +19,6 @@ def part_02(task_input) -> int:
     for number in task_input:
         result += abs(number) // 100
         increment = int(number / abs(number) * (abs(number) % 100))
-        print(current_position, number, result, increment)
         if current_position != 0:
             if increment > 0 and increment + current_position >= 100:
                 result += 1

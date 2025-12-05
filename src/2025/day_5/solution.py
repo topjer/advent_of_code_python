@@ -63,7 +63,6 @@ def main():
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
     result_part1 = part_01(task_input)
     print(f"Outcome of part 1 is: {result_part1}.")
-    # 321373478075864 too low
     # 345755049374932 
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")

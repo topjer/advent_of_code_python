@@ -15,23 +15,22 @@ def part_01(ranges) -> int:
     if the lower bound has an odd number of digits, we take the "smaller" half
 
     """
-    print("------------------------Start---------------------")
     result = 0
     # put logic here
     for lower, upper in ranges:
-        print(lower, upper)
+        # print(lower, upper)
         positions = math.ceil(len(lower) / 2)
-        print(positions)
+        # print(positions)
         current_number = 1 if positions == 1 else max(int(lower[:-positions]), 10**(positions -1 ))
         lower_bound = int(lower)
         upper_bound = int(upper)
-        print(current_number)
+        # print(current_number)
         while True:
             number_to_check = int(str(current_number) * 2)
             # print("number to check" , number_to_check)
             if lower_bound <= number_to_check <= upper_bound:
                 result += number_to_check
-                print("invalid", number_to_check)
+                # print("invalid", number_to_check)
             elif number_to_check > upper_bound:
                 break
             current_number += 1
@@ -77,14 +76,9 @@ def part_02(ranges) -> int:
     when we want to check for blocks of length 1, we will start with '9' and multiply by 3. The next step would not be to 
     take '10' and multiply by 3 but instead take 1 and multiply by 4
     """
-    print("------------------------Start---------------------")
-    # ranges = ranges[2:3]
     result = 0
     # put logic here
     for lower, upper in ranges:
-        # lower = "1"
-        # upper = "19"
-        # print(lower, upper)
         lower_len = len(lower)
         upper_len = len(upper)
         invalid_ids = set()
@@ -134,7 +128,7 @@ def main():
     task_input = parse_input(load_file_single(CURRENT_FOLDER / 'input'))
     # 18700015741
     result_part1 = part_01(task_input)
-     print(f"Outcome of part 1 is: {result_part1}.")
+    print(f"Outcome of part 1 is: {result_part1}.")
     # 20077272987
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
