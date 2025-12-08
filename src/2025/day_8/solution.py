@@ -16,24 +16,39 @@ def part_01(points, number_of_pairs:int) -> int:
 
     # print(distances)
     distances = sorted(distances, key=lambda x: x[1])
-    print(distances)
+    # print(distances)
     circuits = list()
     # circuits.append(set(distances.pop(0)[0]))
     # print(distances)
     # print(circuits)
+    # todo: problem with the current logic is that I do not merge two existing circuits if a new edge
+    #  is added that connects both
     for pair in distances[0:number_of_pairs]:
-        print("Pair:", pair)
-        print(circuits)
+        # print("Pair:", pair)
+        # print(circuits)
+        affected_indexes = list()
         for index, circuit in enumerate(circuits):
             if circuit.intersection(pair[0]):
-                circuits[index] = circuit.union(pair[0])
-                break
+                affected_indexes.append(index)
+
+        if len(affected_indexes) == 1:
+            index = affected_indexes[0]
+            circuits[index] = circuits[index].union(pair[0])
+        elif len(affected_indexes) == 2:
+            # print(affected_indexes)
+            if affected_indexes[0] > affected_indexes[1]:
+                set1 = circuits.pop(affected_indexes[0])
+                set2 = circuits.pop(affected_indexes[1])
+            else:
+                set2 = circuits.pop(affected_indexes[1])
+                set1 = circuits.pop(affected_indexes[0])
+            circuits.append(set1.union(set2))
         else:
             circuits.append(pair[0])
 
     lengths = [len(el) for el in circuits]
     lengths = sorted(lengths, reverse=True)
-    print(lengths)
+    # print(lengths)
     for length in lengths[0:3]:
         result *= length
 
@@ -50,16 +65,16 @@ def parse_input(task_input):
     for index, line in enumerate(task_input):
         x,y,z = line.split(',')
         points.append((index, int(x), int(y), int(z)))
-    print(points)
+    # print(points)
     return points
 
 @timing_val
 def main():
     print("-------Start-------")
-    task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/test_input'))
-    # task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
-    # 2520
-    result_part1 = part_01(task_input, 10)
+    # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/test_input'))
+    task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
+    # 133574
+    result_part1 = part_01(task_input, 1000)
     print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
@@ -69,7 +84,7 @@ if __name__ == '__main__':
 
 def test_part1():
     content = parse_input(load_file(CURRENT_FOLDER / 'tests/test_input'))
-    result = part_01(content)
+    result = part_01(content, 10)
     # put test result here
     assert result == 40
 
