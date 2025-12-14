@@ -4,6 +4,11 @@ from collections import deque, defaultdict
 CURRENT_FOLDER = Path(__file__).parent.resolve()
 
 def part_01(connections) -> int:
+    """Brute-force breadth first search.
+
+    Surprisingly works in part 1 but totally breaks down in part 2. Generic solution for part 2 also solves
+    part 1. But we keep this for documentation purposes
+    """
     result = 0
     # put logic here
     paths = deque()
@@ -21,43 +26,70 @@ def part_01(connections) -> int:
         # print(paths, "\n")
     return result
 
+def reverse_dict(connections):
+    """Reverse a dict
 
-def part_02(connections) -> int:
-    """ Doing breadth first search seems like a bad idea because one keeps checking identical paths.
-    It seems smarter to check the inverse path because:
-    * we will only check relevant paths
-    * we do not recheck paths. Point here is that if I get to a point A from point B or point C does not affect
-      what happens after point A, so I do not have to check that path (from A) twice
+    Was an idea of mine, but did not follow throug.
     """
-    result = 0
-    # invert dictionary
     reverse_connections = defaultdict(list)
     for key, values in connections.items():
         for value in values:
             reverse_connections[value].append(key)
     print(reverse_connections)
-    # put logic here
-    # paths = deque()
-    # paths.append(['fft'])
-    # counter = 0
-    # while paths:
-    #     # if counter == 10000:
-    #     #     break
-    #     path = paths.popleft()
-    #     print(path)
-    #     targets = connections[path[-1]]
-    #     if targets == ['out']:
-    #         # if 'dac' in path and 'fft' in path:
-    #         #     result += 1
-    #         continue
-    #
-    #     for target in targets:
-    #         paths.append([*path, target])
-    #
-    #     counter += 1
-    #     # print(paths, "\n")
+    return reverse_connections
 
-    return result
+PATH_CACHE = dict()
+
+def get_number_paths(start, end, connections) -> int:
+    """Get number of paths from start point to end point
+
+    Find all points connected to start and sum up number of paths from those to end.
+    If one connected point is end, then we have found a path.
+    In order to properly treat paths that should not end in end, we have to check whether we encountered 'out'
+    and ignore that.
+    """
+    if (start, end) in PATH_CACHE:
+        return PATH_CACHE[(start, end)]
+    connected_points = connections[start]
+    number_paths = 0
+    for point in connected_points:
+        if point == end:
+            number_paths += 1
+        elif point == 'out':
+            continue
+        else:
+            number_paths += get_number_paths(point, end, connections)
+
+    # print(start, number_paths)
+    PATH_CACHE[(start, end)] = number_paths
+    
+    return number_paths
+
+
+def part_02(connections) -> int:
+    """ Get all paths going through dac and fft
+
+    One assumption that is bein made is that there should be no cycles, else, the whole task would make no sense.
+    Thus, you either reach fft from dac or the other way around. So, our first step is to determine which case it is.
+
+    Then we determine the number of paths from 'svr' to the first point and from the second point to 'out'. All that
+    is left to do, is to multiply all paths and we are done.
+    """
+    result = 0
+    # print(connections)
+    fft_to_dac = get_number_paths('fft', 'dac', connections)
+    dac_to_fft = get_number_paths('dac', 'fft', connections)
+
+    if fft_to_dac == 0:
+        start_first_stop = get_number_paths('svr', 'dac', connections)
+        bridge = dac_to_fft
+        second_stop_end = get_number_paths('fft', 'out', connections)
+    else:
+        start_first_stop = get_number_paths('svr', 'fft', connections)
+        bridge = fft_to_dac
+        second_stop_end = get_number_paths('dac', 'out', connections)
+
+    return start_first_stop * bridge * second_stop_end
 
 def parse_input(task_input):
     connections = dict()
@@ -69,11 +101,11 @@ def parse_input(task_input):
 
 @timing_val
 def main():
-    task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/test_input2'))
-    # task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
+    # task_input = parse_input(load_file(CURRENT_FOLDER / 'tests/test_input2'))
+    task_input = parse_input(load_file(CURRENT_FOLDER / 'input'))
     # 555
-    # result_part1 = part_01(task_input)
-    # print(f"Outcome of part 1 is: {result_part1}.")
+    result_part1 = get_number_paths('you', 'out', task_input)
+    print(f"Outcome of part 1 is: {result_part1}.")
     result_part2 = part_02(task_input)
     print(f"Outcome of part 2 is: {result_part2}.")
 
